@@ -1,5 +1,5 @@
 ============
-Vauxoo Tools
+Test Vauxoo Tools
 ============
 
 .. image:: https://badge.fury.io/py/vauxootools.png
