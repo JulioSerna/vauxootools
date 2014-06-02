@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import oerplib
-from vauxootools.vauxootools import VauxooToolsServers
+from vauxootools.vauxootools import VauxooTools
 
 class UpdateSeqReconcile(object):
     
@@ -55,7 +55,7 @@ class UpdateSeqReconcile(object):
 
 if __name__ == '__main__':
 
-    configuration = VauxooToolsServers(app_name='seq_reconcile_move',
+    configuration = VauxooTools(app_name='seq_reconcile_move',
                                        usage_message="Created by VauxooTools",
                                        options=['dbname', 'hostname',
                                                 'password', 'port',
