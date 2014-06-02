@@ -17,34 +17,40 @@ class UpdateSeqReconcile(object):
                     hostname,
                     port=port,
                     )  
-
         conect.login(user, pwd, dbname)
-        conect.config['timeout'] = 1000000
+        #conect.config['timeout'] = 1000000
 
         for company_id in conect.search('res.company',[]):
-            moves_company_ids = conect.search('account.move.line', 
-                    [('company_id', '=', company_id), '|',
-                    ('reconcile_id', '!=', False),
-                    ('reconcile_partial_id', '!=', False)])
-            reconcile_moves = []
+            #~ moves_company_ids = conect.search('account.move.line', 
+                    #~ [('company_id', '=', company_id), '|',
+                    #~ ('reconcile_id', '!=', False),
+                    #~ ('reconcile_partial_id', '!=', False)])
+            #~ reconcile_moves = []
+            #~ print moves_company_ids,'moves_company_ids'
             
             sequence_id = conect.search('ir.sequence',
                     [('code', '=', 'account.reconcile'),
                     ('company_id', '=', company_id)])
                      
             if sequence_id:
-                for move in conect.browse('account.move.line', moves_company_ids):
-                    reconcile_moves.append(move.reconcile_id and\
-                    move.reconcile_id.id or\
-                    move.reconcile_partial_id and\
-                    move.reconcile_partial_id.id)
-                        
+                #~ for move in conect.browse('account.move.line', moves_company_ids):
+                    #~ reconcile_moves.append(move.reconcile_id and\
+                    #~ move.reconcile_id.id or\
+                    #~ move.reconcile_partial_id and\
+                    #~ move.reconcile_partial_id.id)
+                        #~ 
                 reconcile_ids = conect.search('account.move.reconcile',
-                        [('name', '=', '/'), ('id', 'in', reconcile_moves)])
+                        [('name', '=', '/')])
                         
-                for move in reconcile_ids:
-                    next_sequence = conect.execute('ir.sequence', 'next_by_id', sequence_id[0])
-                    conect.write('account.move.reconcile', move, {'name': next_sequence},)
+                for move in conect.browse('account.move.reconcile', reconcile_ids):
+                    
+                    rec_company = list( set([ rec_full.company_id.id\
+                                                for rec_full in move.line_id]) ) or\
+                        list( set([ rec_partial.company_id.id\
+                                                for rec_partial in move.line_partial_ids]) )
+                    if rec_company and rec_company[0] == company_id:
+                        next_sequence = conect.execute('ir.sequence', 'next_by_id', sequence_id[0])
+                        conect.write('account.move.reconcile', move.id, {'name': next_sequence},)
         return True
 
 if __name__ == '__main__':
